@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f4ee">
+  <meta name="description" content="按学科与知识点整理的 2007—2026 年考研政治真题。专题练习、整卷练习、错题收藏与本地进度。">
+  <title>知政 · 考研政治专题真题</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="知政首页"><span class="brand-seal">知</span><span>知政<span class="brand-sub">考研政治真题</span></span></a>
+    <nav class="main-nav" aria-label="主要导航">
+      <button class="nav-item active" data-view="all">专题刷题</button>
+      <button class="nav-item" data-view="paper">整卷练习</button>
+      <button class="nav-item" data-view="wrong">错题本 <span id="wrong-count">0</span></button>
+      <button class="nav-item" data-view="favorite">收藏夹 <span id="favorite-count">0</span></button>
+    </nav>
+    <button class="text-button data-button" id="open-data">题库与来源 <span aria-hidden="true">↗</span></button>
+  </header>
+
+  <main class="workspace">
+    <section class="intro" aria-labelledby="page-title">
+      <div class="intro-copy">
+        <div class="eyebrow"><span class="live-dot"></span> 2007 — 2026 · 全国硕士研究生招生考试</div>
+        <h1 id="page-title">把真题，<span>按知识点练透。</span></h1>
+        <p id="page-description">从一道题，串起一个知识点。按学科、专题和题型，找到今天的复习重点。</p>
+      </div>
+      <div class="intro-note"><span class="note-mark">「</span><p>理解每一个选项，<br>比记住一个答案更有用。</p><span class="note-label">今日学习提醒</span></div>
+    </section>
+
+    <section class="overview" aria-label="学习进度">
+      <div class="stat stat-primary"><div class="stat-label">已练习 / 题库总量</div><div class="stat-value"><span id="practiced-value">0</span><span class="stat-denominator" id="total-value"> / —</span></div><div class="progress-track"><span id="progress-bar"></span></div></div>
+      <div class="stat"><div class="stat-label">客观题正确率</div><div class="stat-value" id="accuracy-value">—</div><div class="stat-caption" id="accuracy-caption">提交答案后开始统计</div></div>
+      <div class="stat"><div class="stat-label">待巩固题目</div><div class="stat-value" id="review-value">0</div><button class="stat-link" id="review-link">去错题本复习 <span aria-hidden="true">→</span></button></div>
+      <div class="stat stat-backup"><div class="stat-label">你的学习记录</div><div class="backup-title"><span class="local-dot"></span>保存在当前浏览器</div><div class="backup-actions"><button id="export-backup">导出备份</button><span>·</span><button id="import-backup">导入记录</button></div><input id="backup-file" type="file" accept="application/json,.json" hidden></div>
+    </section>
+
+    <div class="study-layout">
+      <aside class="subject-panel" aria-label="学科选择">
+        <div class="panel-heading"><h2>选择学科</h2><span>SUBJECTS</span></div>
+        <div id="subject-list" class="subject-list"></div>
+        <div class="sidebar-note"><span aria-hidden="true">✳</span><p>历史真题保留当年的表述与背景。涉及时政、法律和政策的知识点，复习时请结合现行考纲。</p></div>
+        <button class="sidebar-source" id="open-data-secondary">查看题库覆盖情况 <span aria-hidden="true">↗</span></button>
+      </aside>
+
+      <section class="practice-panel" aria-label="刷题区域">
+        <div class="filter-panel">
+          <div class="filter-top"><div class="section-title"><span class="section-square"></span><h2 id="practice-heading">专题练习</h2><span class="result-count" id="result-count">正在载入</span></div><button id="reset-filters" class="quiet-button">重置筛选 <span aria-hidden="true">↺</span></button></div>
+          <div class="filter-controls">
+            <label class="select-field"><span>年份</span><select id="year-filter" aria-label="筛选年份"><option value="all">全部年份</option></select></label>
+            <label class="select-field"><span>题型</span><select id="type-filter" aria-label="筛选题型"><option value="all">全部题型</option><option value="single">单项选择</option><option value="multiple">多项选择</option><option value="analysis">分析题</option></select></label>
+            <label class="search-field"><span aria-hidden="true">⌕</span><input id="keyword-filter" type="search" placeholder="搜索题干、选项、知识点" aria-label="搜索题目"></label>
+          </div>
+          <div class="topic-row"><span class="topic-label">专题</span><div class="topic-chips" id="topic-chips"></div></div>
+          <div class="paper-note" id="paper-note" hidden>按原卷题号顺序练习。选择年份即可切换试卷。</div>
+        </div>
+
+        <div class="question-toolbar"><span id="queue-position">准备开始</span><div><button id="resume-button" class="quiet-button" hidden>继续上次 <span aria-hidden="true">↗</span></button><button id="shuffle-button" class="quiet-button">随机练习 <span aria-hidden="true">⤨</span></button></div></div>
+
+        <article class="question-card" id="question-card" aria-live="polite">
+          <div class="question-header"><div class="question-badges" id="question-badges"></div><button class="favorite-button" id="favorite-button" aria-label="收藏此题" aria-pressed="false"><span id="favorite-icon" aria-hidden="true">☆</span><span id="favorite-label">收藏</span></button></div>
+          <div class="question-topic" id="question-topic"></div>
+          <h3 class="question-stem" id="question-stem"></h3>
+          <div class="question-images" id="question-images"></div>
+          <div id="question-options" class="question-options" role="group" aria-label="作答选项"></div>
+          <div id="analysis-input" hidden><label class="answer-label" for="analysis-answer">先写下你的思路</label><textarea id="analysis-answer" rows="7" placeholder="试着用“原理 + 材料分析 + 结论”组织答案。内容自动保存到当前浏览器。"></textarea><div class="answer-note">分析题采用自评，不计入客观题正确率。</div></div>
+          <div class="question-actions" id="question-actions"><span id="answer-hint">选择答案后提交</span><button id="submit-answer" class="primary-button">提交答案 <span aria-hidden="true">→</span></button></div>
+          <section class="answer-panel" id="answer-panel" aria-label="答案与解析" hidden>
+            <div class="answer-result" id="answer-result"></div>
+            <div id="reference-content"></div>
+            <div class="self-rate" id="self-rate" hidden><p>对照答案后，判断这道题的掌握程度：</p><div><button data-self-rate="true" class="self-button">✓ 已掌握</button><button data-self-rate="false" class="self-button">↻ 继续巩固</button></div></div>
+            <div class="source-row" id="question-source"></div>
+            <button id="retry-answer" class="retry-button">重新作答 <span aria-hidden="true">↺</span></button>
+          </section>
+        </article>
+        <div class="empty-state" id="empty-state" hidden><div class="empty-icon">⌕</div><h3 id="empty-title">正在载入题库</h3><p id="empty-description">稍等片刻，马上开始今天的练习。</p><button class="primary-button" id="empty-reset" hidden>查看全部真题 →</button></div>
+        <div class="pagination" id="pagination"><button id="previous-question" class="secondary-button"><span aria-hidden="true">←</span> 上一题</button><span>做完一题，停下来想一想。</span><button id="next-question" class="secondary-button">下一题 <span aria-hidden="true">→</span></button></div>
+        <p class="data-notice" id="data-notice"></p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer"><span><b>知政</b> · 一题一得，稳步向前。</span><span>真题用于个人学习 · 答案与资料以原始来源为准</span></footer>
+
+  <dialog id="data-dialog" class="data-dialog"><div class="dialog-top"><div><div class="eyebrow">DATA & SOURCES</div><h2>题库覆盖与资料来源</h2></div><button id="close-data" class="close-button" aria-label="关闭">×</button></div><div class="dialog-body"><p id="data-summary"></p><div class="coverage-legend"><span>单选 / 多选 / 分析为已收录题目数</span><span>答案覆盖仅统计已提供答案或参考答案</span></div><div class="coverage-table-wrap"><table class="coverage-table"><thead><tr><th>年份</th><th>单选</th><th>多选</th><th>分析</th><th>答案覆盖</th><th>资料</th></tr></thead><tbody id="coverage-body"></tbody></table></div><div class="source-notes"><h3>练习前了解这些</h3><ul><li>真题按考试年份标注，2026 年真题对应 2025 年 12 月举行的初试。</li><li>专题分类用于辅助复习；部分题目涉及多个知识点，分类可能与其他资料不同。</li><li>历史题目的时政、政策、法律表述保留原有语境，不能直接视为现行结论。</li><li>未收录可靠答案的题目明确标注，不自动判分；分析题通过自评记录掌握情况。</li><li>进度仅保存在当前设备的浏览器中。清理网站数据、使用无痕模式或换设备可能导致记录丢失，可导出 JSON 备份。</li></ul></div><div id="metadata-notes"></div></div></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

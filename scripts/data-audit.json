@@ -1,0 +1,286 @@
+{
+  "total": 760,
+  "years": [
+    {
+      "year": 2007,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398356.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398356_1.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398356_2.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398356_3.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398356_4.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398356_5.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398356_6.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398356_7.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398356_8.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398356_9.shtml"
+      ]
+    },
+    {
+      "year": 2008,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398272.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398272_1.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398272_2.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398272_3.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398272_4.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398272_5.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398272_6.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398272_7.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398272_8.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160516_1398272_9.shtml"
+      ]
+    },
+    {
+      "year": 2009,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://kaoyan.xdf.cn/201811/10830373.html"
+      ]
+    },
+    {
+      "year": 2010,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://raw.githubusercontent.com/mrwoov/kyzz/master/data/10.json",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160513_1397727_5.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160513_1397727_6.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160513_1397727_7.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160513_1397727_8.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160513_1397727_9.shtml"
+      ]
+    },
+    {
+      "year": 2011,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://raw.githubusercontent.com/mrwoov/kyzz/master/data/11.json",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160513_1397664_5.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160513_1397664_6.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160513_1397664_7.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160513_1397664_8.shtml",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201605/t20160513_1397664_9.shtml"
+      ]
+    },
+    {
+      "year": 2012,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://raw.githubusercontent.com/mrwoov/kyzz/master/data/12.json",
+        "https://yz.chsi.com.cn/kyzx/politics/201207/20120718/329548930-3.html"
+      ]
+    },
+    {
+      "year": 2013,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://github.com/mrwoov/kyzz/blob/master/data/13.json",
+        "https://www.btmc.edu.cn/__local/9/A4/25/57748ADB6C2C448942919ADAF1A_7334173C_766F2.pdf?e=.pdf",
+        "https://yz.chsi.com.cn/kyzx/politics/201301/20130105/381595917-5.html"
+      ]
+    },
+    {
+      "year": 2014,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://github.com/mrwoov/kyzz/blob/master/data/14.json",
+        "https://www.btmc.edu.cn/__local/F/93/5E/4169D76D5346E70F8957A97E99C_5D8A3E80_8ADA6.pdf?e=.pdf"
+      ]
+    },
+    {
+      "year": 2015,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://github.com/mrwoov/kyzz/blob/master/data/15.json",
+        "https://www.btmc.edu.cn/__local/A/92/CB/18133FF1E888E97C97AC9C5B259_BFFEEBF9_73034.pdf?e=.pdf"
+      ]
+    },
+    {
+      "year": 2016,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://github.com/mrwoov/kyzz/blob/master/data/16.json",
+        "https://yz.chsi.com.cn/kyzx/politics/201512/20151228/1515280375-3.html"
+      ]
+    },
+    {
+      "year": 2017,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://github.com/mrwoov/kyzz/blob/master/data/17.json",
+        "https://doc.kmf.com/ky_material/fd/8b/fd8bf2c587ffb0598702fca43b692ed2.pdf"
+      ]
+    },
+    {
+      "year": 2018,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://github.com/mrwoov/kyzz/blob/master/data/18.json",
+        "https://doc.kmf.com/ky_material/c5/af/c5af81194077934656e4a5d75c655844.pdf"
+      ]
+    },
+    {
+      "year": 2019,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://github.com/mrwoov/kyzz/blob/master/data/19.json",
+        "https://m.kaoyan.com/www/zhengzhi/zhenti/5c1f54be4adec.html"
+      ]
+    },
+    {
+      "year": 2020,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://github.com/mrwoov/kyzz/blob/master/data/20.json",
+        "https://kaoyan.eol.cn/shiti/zhengzhi/201912/t20191221_1700451_3.shtml"
+      ]
+    },
+    {
+      "year": 2021,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://github.com/mrwoov/kyzz/blob/master/data/21.json",
+        "https://www.chinakaoyan.com/info/article/id/372247.shtml"
+      ]
+    },
+    {
+      "year": 2022,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://github.com/mrwoov/kyzz/blob/master/data/22.json",
+        "https://31202860.s21i.faiusr.com/61/ABUIABA9GAAg4LqNvQYolIK40QU.pdf"
+      ]
+    },
+    {
+      "year": 2023,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://www.chinakaoyan.com/info/article/id/477527.shtml"
+      ]
+    },
+    {
+      "year": 2024,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://kaoyan.xdf.cn/202312/13554748.html"
+      ]
+    },
+    {
+      "year": 2025,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://static.kaoyan.cn/file/question/2024/12/21/91b7a7b452c6b960d9259771b7812992.pdf"
+      ]
+    },
+    {
+      "year": 2026,
+      "total": 38,
+      "single": 16,
+      "multiple": 17,
+      "analysis": 5,
+      "answered": 33,
+      "references": 5,
+      "sources": [
+        "https://static.kaoyan.cn/file/question/2025/12/20/e42f4c7191a84bde7b9688900c790a1a.pdf"
+      ]
+    }
+  ],
+  "warnings": []
+}
