@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const html = fs.readFileSync(path.join(root,'dist/index.html'),'utf8');
-const js = fs.readFileSync(path.join(root,'dist/app.js'),'utf8');
+const js = fs.readFileSync(process.env.ZHIZHENG_JS_PATH || path.join(root,'dist/app.js'),'utf8');
 const data = JSON.parse(fs.readFileSync(path.join(root,'dist/questions.json'),'utf8'));
 const ids = new Set([...html.matchAll(/id="([^"]+)"/g)].map(m=>m[1]));
 for(const m of js.matchAll(/\$\('([^']+)'\)/g)) assert(ids.has(m[1]), `Missing DOM id: ${m[1]}`);
@@ -29,26 +29,39 @@ class Element {
   setAttribute(k,v){this.attrs[k]=String(v);if(k==='class')this.className=String(v);if(k.startsWith('data-'))this.dataset[k.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]=String(v);}
   getAttribute(k){return this.attrs[k];} addEventListener(k,fn){(this.listeners[k]??=[]).push(fn);}
   dispatch(k,extra={}){for(const fn of this.listeners[k]??[])fn({target:this,...extra});}
-  click(){if(!this.disabled)this.dispatch('click');}scrollIntoView(){}showModal(){this.open=true;}close(){this.open=false;}getBoundingClientRect(){return {left:0,right:100,top:0,bottom:100};}
+  click(){if(!this.disabled){this.clickCount=(this.clickCount||0)+1;this.dispatch('click');}}scrollIntoView(){}showModal(){this.open=true;}close(){this.open=false;}getBoundingClientRect(){return {left:0,right:100,top:0,bottom:100};}
 }
 const persistent = new Map();
-async function launch(){
+async function launch({nativeMode=false,beforeInit,storage=persistent}={}){
   const elements=[],byId=new Map();
   for(const match of html.matchAll(/<([a-z][\w-]*)([^>]*)>/gi)){
     const node=new Element(match[1]);for(const a of match[2].matchAll(/([\w-]+)="([^"]*)"/g)){node.setAttribute(a[1],a[2]);if(a[1]==='id')byId.set(a[2],node);}
     node.hidden=/\bhidden\b/.test(match[2]);elements.push(node);
   }
-  const query=s=>{if(s.startsWith('.'))return elements.filter(n=>n.classList.contains(s.slice(1)));const m=s.match(/^\[([^\]]+)\]$/);return m?elements.filter(n=>m[1] in n.attrs):[];};
+  const query=s=>{
+    // The native labels use a few static descendant/last-child selectors; no layout engine is needed.
+    const last=s.trim().split(/\s+|\s*>\s*/).filter(Boolean).at(-1), lastChild=last.endsWith(':last-child');
+    const simple=last.replace(/:last-child$/,''); let found=[];
+    if(simple.startsWith('.'))found=elements.filter(n=>n.classList.contains(simple.slice(1)));
+    else {const m=simple.match(/^\[([^\]]+)\]$/);found=m?elements.filter(n=>m[1] in n.attrs):elements.filter(n=>n.tagName===simple.toUpperCase());}
+    return lastChild?found.slice(-1):found;
+  };
   const errors=[];
-  const context={document:{body:new Element('body'),createElement:t=>new Element(t),getElementById:id=>byId.get(id)||null,querySelector:s=>query(s)[0]||null,querySelectorAll:query},localStorage:{getItem:k=>persistent.get(k)||null,setItem:(k,v)=>persistent.set(k,String(v))},location:{href:'https://example.test/'},URL,Blob,console:{log(){},warn(){},error:(...args)=>errors.push(args)},fetch:async()=>({ok:true,json:async()=>structuredClone(data)}),setTimeout:()=>1,clearTimeout(){},Date,Math};
+  const bridgeCalls={exports:[],imports:0,blobCreates:0,downloadBlobs:[],storageWrites:0},globalListeners={};
+  class MockBlob extends Blob {constructor(...args){super(...args);bridgeCalls.blobCreates++;}}
+  class MockURL extends URL {static createObjectURL(blob){bridgeCalls.downloadBlobs.push(blob);return 'blob:qa-backup';}static revokeObjectURL(){}}
+  const context={document:{body:new Element('body'),documentElement:new Element('html'),createElement:t=>new Element(t),getElementById:id=>byId.get(id)||null,querySelector:s=>query(s)[0]||null,querySelectorAll:query},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>{storage.set(k,String(v));bridgeCalls.storageWrites++;}},location:{href:nativeMode?'https://appassets.androidplatform.net/index.html':'https://example.test/'},URL:MockURL,Blob:MockBlob,console:{log(){},warn(){},error:(...args)=>errors.push(args)},fetch:async()=>({ok:true,json:async()=>structuredClone(data)}),setTimeout:()=>1,clearTimeout(){},Date,Math,addEventListener:(event,listener)=>{(globalListeners[event]??=[]).push(listener);}};
+  if(nativeMode)context.AndroidBridge={exportBackup:json=>bridgeCalls.exports.push(json),importBackup:()=>{bridgeCalls.imports++;}};
   context.globalThis=context;
+  context.window=context;
   const instrument=js.replace(/\n  init\(\);\n\}\)\(\);\s*$/,`\n  globalThis.__qa={init,applyFilters,viewChange,submit,selfRate,next,importBackup,get queue(){return queue;},get current(){return queue[index];},get state(){return state;},setFilter(values){filter={...filter,...values};applyFilters();}};\n})();`);
   assert.notEqual(instrument,js,'QA instrumentation target missing');
   vm.runInNewContext(instrument,context,{filename:'app.js'});
+  if(beforeInit)await beforeInit({app:context.__qa,nativeApp:context.ZhizhengApp,storage});
   await context.__qa.init();assert.equal(errors.length,0,JSON.stringify(errors));
-  return {app:context.__qa,$:id=>byId.get(id),elements,errors};
+  return {app:context.__qa,nativeApp:context.ZhizhengApp,$:id=>byId.get(id),elements,errors,bridgeCalls,context,storage,globalListeners};
 }
-const {$,app}=await launch();
+const web=await launch(),{$,app}=web;
 assert.equal(app.queue.length,760);assert.equal($('answer-panel').hidden,true);
 assert.equal($('question-card').hidden,false);
 let current=app.current;assert.equal(current.type,'single');
@@ -70,4 +83,36 @@ app.viewChange('all');app.next(7);const resumeId=app.current.id;
 const again=await launch();assert.equal(again.app.current.id,resumeId,'resume should survive reload');
 const saved=Object.keys(app.state.records).length;
 await app.importBackup({size:1,text:async()=>JSON.stringify({records:{'unknown-id':{correct:true}},favorites:['unknown-id']})});assert.equal(Object.keys(app.state.records).length,saved);
-console.log(JSON.stringify({questions:760,years:20,checks:['DOM references','complete papers','initial hidden answers','single grading','multiple exact match','retry and wrong-book update','favorites','whole paper ordering','analysis drafts and self rating','subject/topic/search filters','resume after reload','backup unknown-ID validation'],result:'PASS'},null,2));
+// Capture the real web export format, then migrate it through the native string callback.
+$('export-backup').click();assert.equal(web.bridgeCalls.downloadBlobs.length,1,'web export should still use a downloadable Blob');
+const webBackup=await web.bridgeCalls.downloadBlobs[0].text(),webPayload=JSON.parse(webBackup);
+const nativeStorage=new Map(),native=await launch({nativeMode:true,storage:nativeStorage});
+assert(native.context.document.body.classList.contains('native-app'),'native mode should activate Android styling');
+assert.equal(native.$('page-description').textContent,'760 道真题 · 53 个专题 · 无需联网');
+native.app.setFilter({year:'2007',type:'single'});const nativeOnly=native.app.current;
+for(const letter of nativeOnly.answer){const option=native.$('question-options').children.find(n=>n.children[0]?.textContent===letter);assert(option);option.click();}
+native.$('submit-answer').click();assert.equal(native.app.state.records[nativeOnly.id].correct,true);
+const nativeBlobCount=native.bridgeCalls.blobCreates;
+native.$('export-backup').click();assert.equal(native.bridgeCalls.exports.length,1,'Android export should call its bridge');
+assert.equal(typeof native.bridgeCalls.exports[0],'string');assert.equal(JSON.parse(native.bridgeCalls.exports[0]).records[nativeOnly.id].correct,true);
+assert.equal(native.bridgeCalls.blobCreates,nativeBlobCount,'Android export must not create a web Blob');
+assert.equal(native.bridgeCalls.downloadBlobs.length,0,'Android export must not trigger a Blob download');
+native.$('import-backup').click();assert.equal(native.bridgeCalls.imports,1,'Android import button should open the native picker');
+assert.equal(native.$('backup-file').clickCount||0,0,'Android import should not click the browser file input');
+await native.nativeApp.onImportBackup(webBackup);
+for(const [id,record] of Object.entries(webPayload.records))assert.equal(native.app.state.records[id].correct,record.correct,`web-to-native record ${id}`);
+assert.equal(native.app.state.records[nativeOnly.id].correct,true,'native import must merge rather than replace existing records');
+for(const id of webPayload.favorites)assert(native.app.state.favorites.includes(id),'web favorites should migrate');
+const flushFavorite=data.questions.find(q=>!native.app.state.favorites.includes(q.id)).id;
+native.app.state.favorites.push(flushFavorite);const writesBefore=native.bridgeCalls.storageWrites;
+native.nativeApp.flushState();assert.equal(native.bridgeCalls.storageWrites,writesBefore+1,'flushState must persist current state');
+assert(JSON.parse(nativeStorage.get('zhizheng-politics-v1')).favorites.includes(flushFavorite));
+assert.equal(native.globalListeners.pagehide.length,1,'Android pagehide should register the persistence hook');
+const nativeReload=await launch({nativeMode:true,storage:nativeStorage});assert(nativeReload.app.state.favorites.includes(flushFavorite),'native records should survive a reload');
+const early=await launch({nativeMode:true,storage:new Map(),beforeInit:({app,nativeApp,storage})=>{
+  nativeApp.onImportBackup(webBackup);assert.equal(Object.keys(app.state.records).length,0,'pre-init callback must queue records');assert.equal(storage.size,0,'pre-init callback must not save against an empty question list');
+}});
+for(const [id,record] of Object.entries(webPayload.records))assert.equal(early.app.state.records[id].correct,record.correct,`queued native import ${id}`);
+assert.equal(Object.keys(early.app.state.records).length,Object.keys(webPayload.records).length,'queued import should merge after all question IDs are available');
+assert.equal(early.app.queue.length,760);
+console.log(JSON.stringify({questions:760,years:20,checks:['DOM references','complete papers','initial hidden answers','single grading','multiple exact match','retry and wrong-book update','favorites','whole paper ordering','analysis drafts and self rating','subject/topic/search filters','resume after reload','backup unknown-ID validation','web export format','Android bridge export without Blob download','Android bridge import picker','web-to-Android backup merge','pre-init native import queue','native flushState and reload persistence'],result:'PASS'},null,2));

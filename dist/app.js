@@ -1,6 +1,7 @@
 'use strict';
 (() => {
   const KEY = 'zhizheng-politics-v1';
+  const IS_ANDROID = !!(globalThis.AndroidBridge && typeof globalThis.AndroidBridge.exportBackup === 'function');
   const TYPES = { single: '单项选择', multiple: '多项选择', analysis: '分析题' };
   const SUBJECTS = [
     ['all', '全部学科', '从知识点出发', '全'], ['马原', '马克思主义基本原理', '原理与方法', '理'],
@@ -14,6 +15,8 @@
   let filter = { view: 'all', subject: 'all', year: 'all', type: 'all', topic: 'all', keyword: '' };
   let state = { records: {}, favorites: [], drafts: {}, lastQuestionId: null }, retrying = false, toastTimer;
   let storageAvailable = true;
+  let readyForImport = false;
+  let pendingNativeImport = null;
 
   function subjectKey(value) {
     const s = String(value || '综合');
@@ -48,7 +51,7 @@
   function isWrong(q) { return state.records[q.id]?.correct === false; }
   function knownAnswer(q) { return q.type !== 'analysis' && q.answer.length > 0 && q.answer.every(k => q.options && Object.prototype.hasOwnProperty.call(q.options, k)); }
   function hasReference(q) { return q.type === 'analysis' ? !!(q.referenceAnswer || q.explanation) : knownAnswer(q); }
-  function safeLink(url, title) { const a = el('a', '', title || '查看原始资料'); try { const u = new URL(url, location.href); if (!['https:', 'http:'].includes(u.protocol)) throw new Error(); a.href = u.href; a.target = '_blank'; a.rel = 'noopener noreferrer'; return a; } catch (_) { return el('span', '', '来源链接暂缺'); } }
+  function safeLink(url, title) { const a = el('a', '', title || '查看原始资料'); try { const u = new URL(url, location.href); if (!['https:', 'http:'].includes(u.protocol)) throw new Error(); a.href = u.href; a.target = IS_ANDROID ? '_self' : '_blank'; a.rel = 'noopener noreferrer'; return a; } catch (_) { return el('span', '', '来源链接暂缺'); } }
 
   function updateStats() {
     const valid = questions.filter(q => state.records[q.id]);
@@ -254,6 +257,10 @@
   }
   function exportBackup() {
     const out = { app:'知政考研政治真题', version:1, exportedAt:new Date().toISOString(), ...state };
+    if (IS_ANDROID) {
+      globalThis.AndroidBridge.exportBackup(JSON.stringify(out,null,2));
+      return;
+    }
     const blob = new Blob([JSON.stringify(out,null,2)],{type:'application/json'}), url = URL.createObjectURL(blob), a = el('a');
     a.href = url; a.download = `知政学习记录_${new Date().toISOString().slice(0,10)}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url),1000); toast('学习记录已导出。');
   }
@@ -295,10 +302,34 @@
     $('resume-button').addEventListener('click',() => { const id = state.lastQuestionId; filter = {view:'all',subject:'all',year:'all',type:'all',topic:'all',keyword:''}; applyFilters(id); });
     $('open-data').addEventListener('click',showData); $('open-data-secondary').addEventListener('click',showData);
     $('close-data').addEventListener('click',() => $('data-dialog').close()); $('data-dialog').addEventListener('click',e => { if (e.target === $('data-dialog')) { const r=e.target.getBoundingClientRect(); if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) e.target.close(); } });
-    $('export-backup').addEventListener('click',exportBackup); $('import-backup').addEventListener('click',() => $('backup-file').click()); $('backup-file').addEventListener('change',e => importBackup(e.target.files[0]));
+    $('export-backup').addEventListener('click',exportBackup); $('import-backup').addEventListener('click',() => {
+      if (IS_ANDROID) globalThis.AndroidBridge.importBackup();
+      else $('backup-file').click();
+    }); $('backup-file').addEventListener('change',e => importBackup(e.target.files[0]));
   }
+  globalThis.ZhizhengApp = Object.freeze({
+    onImportBackup(jsonString) {
+      const text = String(jsonString);
+      if (!readyForImport) { pendingNativeImport = text; return; }
+      return importBackup({ size:new Blob([text]).size, text:async () => text });
+    },
+    flushState: saveState
+  });
   async function init() {
     document.body.classList.add('loading'); readState(); bindEvents();
+    if (IS_ANDROID) {
+      document.body.classList.add('native-app');
+      document.querySelector('.backup-title').textContent = '保存在手机本地';
+      $('page-title').textContent = '政治真题，按专题练。';
+      $('page-description').textContent = '760 道真题 · 53 个专题 · 无需联网';
+      const note = document.querySelector('.intro .eyebrow');
+      if (note) note.textContent = '知政 · 2007—2026 真题库';
+      const backupTip = document.querySelector('.source-notes li:last-child');
+      if (backupTip) backupTip.textContent = '学习记录保存在本机应用中。网页与 App 的记录可通过导出、导入 JSON 备份迁移；卸载前请先备份。';
+      const appNote = document.querySelector('.site-footer > span:last-child');
+      if (appNote) appNote.textContent = '知政 1.0.0 · 离线学习';
+      globalThis.addEventListener('pagehide',saveState);
+    }
     for(let year=2026;year>=2007;year--){ const o=el('option','',`${year} 年`);o.value=String(year);$('year-filter').append(o); }
     try {
       const response = await fetch('./questions.json'); if(!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -307,6 +338,11 @@
       document.body.classList.remove('loading');
       if(!questions.length) throw new Error('题库为空');
       const resume = state.lastQuestionId; applyFilters(resume);
+      readyForImport = true;
+      if (pendingNativeImport !== null) {
+        const pending = pendingNativeImport; pendingNativeImport = null;
+        await globalThis.ZhizhengApp.onImportBackup(pending);
+      }
     } catch(error) {
       document.body.classList.remove('loading'); $('question-card').hidden=true; $('pagination').hidden=true; $('empty-state').hidden=false;
       $('empty-title').textContent='题库暂时没有载入成功'; $('empty-description').textContent='请刷新页面重试。如果直接打开下载文件，请通过网站链接访问。'; $('queue-position').textContent='连接题库失败'; $('result-count').textContent='暂未载入'; $('data-notice').textContent='学习记录仍保存在当前浏览器中。';

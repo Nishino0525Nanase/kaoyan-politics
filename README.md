@@ -6,6 +6,20 @@
 
 提交到 `main` 后会自动校验题库并将 `dist/` 发布到 GitHub Pages。
 
+## Android 应用
+
+`android/` 是可离线使用的安卓应用工程，包名 `com.nishino.zhizheng`。题库和图片随 APK 内置，支持专题筛选、错题、收藏及本机进度，不申请联网或存储权限。备份通过系统文件选择器导入、导出，可与网页版的 JSON 学习记录互相迁移。
+
+使用 JDK 17、Node.js 与 Android SDK 35，在工程根目录安装构建依赖后，在 Android Studio 打开 `android/`，或执行：
+
+```sh
+npm ci
+cd android
+./gradlew assembleRelease
+```
+
+构建前会自动将 `dist/` 同步为应用内资源，并将应用脚本转译以兼容 WebView 74。生成的 release APK 需要签名后安装。签名密钥应单独私下保留，仓库不保存密钥或密码；升级已安装的版本时，必须继续使用同一签名且提高 `versionCode`。
+
 ## 使用
 
 在发布网址打开。选择题提交后按完整答案判分；多选少选、错选均判错。分析题提供材料和参考作答要点，通过自评进入或移出错题本。学习记录保存在当前浏览器，可导出 JSON 备份并在其他设备导入。

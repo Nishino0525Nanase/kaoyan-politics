@@ -1,0 +1,45 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.nishino.zhizheng'
+    compileSdk 35
+    buildToolsVersion '35.0.0'
+
+    defaultConfig {
+        applicationId 'com.nishino.zhizheng'
+        minSdk 23
+        targetSdk 35
+        versionCode 1
+        versionName '1.0.0'
+    }
+    buildFeatures {
+        buildConfig true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+tasks.register('syncWebAssets', Copy) {
+    from '../../dist'
+    into 'src/main/assets/web'
+    exclude '.nojekyll'
+    doLast {
+        exec {
+            workingDir rootProject.projectDir.parentFile
+            commandLine 'node', 'scripts/prepare-android-web.mjs'
+        }
+    }
+}
+tasks.named('preBuild').configure {
+    dependsOn 'syncWebAssets'
+}
